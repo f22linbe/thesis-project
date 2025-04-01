@@ -1,26 +1,30 @@
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
-
-#[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
-}
-
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
-}
-
-async fn greet() -> impl Responder {
-    HttpResponse::Ok().body("Hey there!")
+use actix_web::{
+    App, HttpServer,
+    web::{self, Data},
+};
+use dotenv::dotenv;
+use sqlx::{Pool, Postgres, postgres::PgPoolOptions};
+mod services;
+use services::{create_book, fetch_book, greet};
+pub struct AppState {
+    db: Pool<Postgres>,
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenv().ok();
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let dbpool = PgPoolOptions::new()
+        .max_connections(10)
+        .connect(&database_url)
+        .await
+        .expect("Error building a connection pool");
     let port = 8080;
-    HttpServer::new(|| {
+    HttpServer::new(move || {
         App::new()
-            .service(hello)
-            .service(echo)
+            .app_data(Data::new(AppState { db: dbpool.clone() }))
+            .service(create_book)
+            .service(fetch_book)
             .route("/hey", web::get().to(greet))
     })
     .bind(("127.0.0.1", port))?
