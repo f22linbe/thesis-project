@@ -17,6 +17,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 
+	// routes
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -25,7 +26,6 @@ func main() {
 	})
 
 	r.GET("/book/:id", handlers.GetBookHandler)
-
-	// })
+	r.POST("/book", handlers.PostBookHandler)
 	r.Run(":" + port) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"gin-api/initializers"
+	"gin-api/models"
 )
 
 func GetBook(id int) (string, error) {
@@ -15,4 +16,19 @@ func GetBook(id int) (string, error) {
 		return "", err
 	}
 	return text, nil
+}
+
+func PostBook(book models.Book) (int, error) {
+	var id int
+	err := initializers.DB.QueryRow(context.Background(),
+		`
+		INSERT INTO posted_books (author, book_text, book_size) 
+		VALUES ($1, $2, $3) 
+		RETURNING id
+	`,
+		book.Author, book.BookText, book.BookSize).Scan(&id)
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }

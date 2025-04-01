@@ -1,7 +1,11 @@
 package handlers
 
 import (
+	"fmt"
+	"gin-api/models"
 	"gin-api/repository"
+	"log"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -24,4 +28,29 @@ func GetBookHandler(c *gin.Context) {
 		return
 	}
 	c.JSON(200, gin.H{"text": booktext})
+}
+
+func PostBookHandler(c *gin.Context) {
+	var book models.Book
+
+	if err := c.ShouldBindJSON(&book); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON input"})
+		return
+	}
+
+	if book.Author == "" || book.BookText == "" || book.BookSize == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Author, text and size are required"})
+		return
+	}
+
+	id, err := repository.PostBook(book)
+	if err != nil {
+		log.Printf("CreateUser error: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to post book"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": fmt.Sprintf("Book with ID %d was posted to the database", id),
+	})
 }
