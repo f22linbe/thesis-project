@@ -41,7 +41,7 @@ fastify.get('/book/:id', async (req,reply) => {
   const client = await fastify.pg.connect()
   try {
     const { rows } = await client.query(
-      'SELECT text FROM books WHERE id=$1', [req.params.id]
+      'SELECT * FROM books WHERE id=$1', [req.params.id]
     )
     return rows
   } finally {

@@ -9,7 +9,7 @@ import (
 func GetBook(id int) (string, error) {
 	var text string
 
-	row := initializers.DB.QueryRow(context.Background(), "SELECT text FROM books WHERE id=$1", id)
+	row := initializers.DB.QueryRow(context.Background(), "SELECT * FROM books WHERE id=$1", id)
 	err := row.Scan(&text)
 
 	if err != nil {
@@ -22,9 +22,9 @@ func PostBook(book models.Book) (int, error) {
 	var id int
 	err := initializers.DB.QueryRow(context.Background(),
 		`
-		INSERT INTO posted_books (author, book_text, book_size) 
-		VALUES ($1, $2, $3) 
-		RETURNING id
+	INSERT INTO posted_books (author, book_text, book_size) 
+	VALUES ($1, $2, $3) 
+	RETURNING id
 	`,
 		book.Author, book.BookText, book.BookSize).Scan(&id)
 	if err != nil {
