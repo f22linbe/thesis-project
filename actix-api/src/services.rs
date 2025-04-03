@@ -27,7 +27,7 @@ pub struct BookMessage {
 }
 
 #[derive(FromRow)]
-pub struct CreateBookInsert {
+pub struct IDResponse {
     pub id: i32,
 }
 
@@ -49,7 +49,7 @@ pub async fn fetch_book(state: Data<AppState>, path: Path<i32>) -> impl Responde
 
 #[post("/book")]
 pub async fn create_book(state: Data<AppState>, body: Json<CreateBook>) -> impl Responder {
-    let result = sqlx::query_as::<_, CreateBookInsert>(
+    let result = sqlx::query_as::<_, IDResponse>(
         "INSERT INTO posted_books (author, book_text, book_size) 
 	VALUES ($1, $2, $3::book_size) RETURNING id",
     )
