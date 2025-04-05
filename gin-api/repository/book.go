@@ -6,16 +6,16 @@ import (
 	"gin-api/models"
 )
 
-func GetBook(id int) (string, error) {
-	var text string
+func GetBook(id int) (models.BookResponse, error) {
+	var book models.BookResponse
 
-	row := initializers.DB.QueryRow(context.Background(), "SELECT * FROM books WHERE id=$1", id)
-	err := row.Scan(&text)
+	query := "SELECT id, book_id, url, text FROM books WHERE id=$1"
+	err := initializers.DB.QueryRow(context.Background(), query, id).Scan(&book.ID, &book.Bookid, &book.Url, &book.Text)
 
 	if err != nil {
-		return "", err
+		return models.BookResponse{}, err
 	}
-	return text, nil
+	return book, nil
 }
 
 func PostBook(book models.Book) (int, error) {
