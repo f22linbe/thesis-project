@@ -1,6 +1,8 @@
 # --- Basic Info ---
 **/.env
 **/.env.*
+
+nginx/nginx-dev.conf
 # --- Rust ---
 target/
 
