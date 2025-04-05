@@ -19,7 +19,7 @@ async fn main() -> std::io::Result<()> {
         .connect(&database_url)
         .await
         .expect("Error building a connection pool");
-    let port = 8080;
+    let port = 3001;
     HttpServer::new(move || {
         App::new()
             .app_data(Data::new(AppState { db: dbpool.clone() }))
