@@ -31,7 +31,7 @@ pub struct IDResponse {
     pub id: i32,
 }
 
-#[get("/book/{id}")]
+#[get("/actix/book/{id}")]
 pub async fn fetch_book(state: Data<AppState>, path: Path<i32>) -> impl Responder {
     let id: i32 = path.into_inner();
 
@@ -47,7 +47,7 @@ pub async fn fetch_book(state: Data<AppState>, path: Path<i32>) -> impl Responde
     // HttpResponse::Ok().body("Hello world!")
 }
 
-#[post("/book")]
+#[post("/actix/book")]
 pub async fn create_book(state: Data<AppState>, body: Json<CreateBook>) -> impl Responder {
     let result = sqlx::query_as::<_, IDResponse>(
         "INSERT INTO posted_books (author, book_text, book_size) 

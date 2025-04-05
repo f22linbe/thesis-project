@@ -39,7 +39,7 @@ fastify.get("/", async function handler(request, reply) {
 });
 
 fastify.get(
-  "/book/:id",
+  "/fastify/book/:id",
   {
     schema: getBookSchema,
   },
@@ -56,7 +56,7 @@ fastify.get(
 );
 
 fastify.post(
-  "/book",
+  "/fastify/book",
   {
     schema: createBookSchema,
   },
