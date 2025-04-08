@@ -1,28 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Book App</title>
 
     <style>
-        pre {
-          white-space: pre-wrap;
-          font-family: monospace;
-        }
-      </style>
-</head>
-<body>
-    <select id="select-api"> 
+      pre {
+        white-space: pre-wrap;
+        font-family: monospace;
+      }
+      div {
+        padding-bottom: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="select-field">
+      <select id="select-api">
         <option value="/actix/">Actix Web</option>
         <option value="/fastify/">Fastify</option>
         <option value="/gin/">Gin</option>
-    </select>
-
-    <input type="text" id="book-id" placeholder="Enter Book ID" />
-    <button onclick="getBook()">Get book</button>
-    <pre id="book-text"></pre>
+      </select>
+    </div>
+    <div class="get-field">
+      <input type="text" id="book-id" placeholder="Enter Book ID" />
+      <button onclick="getBook()">Get book</button>
+    </div>
+    <div class="post-field">
+      <textarea rows="20" cols="50"></textarea>
+      <input type="number" id="post-number" placeholder="Number of books" />
+      <select id="select-text-size">
+        <option value="small">Small</option>
+        <option value="medium">Medium</option>
+        <option value="large">Large</option>
+      </select>
+      <button onclick="setStorageVariables()">Post Book</button>
+    </div>
+    <div id="result-field">
+      <pre id="book-text"></pre>
+    </div>
+    <script src="chance.js"></script>
     <script src="script.js"></script>
-</body>
+  </body>
 </html>
-
