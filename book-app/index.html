@@ -18,24 +18,31 @@
   <body>
     <div class="select-field">
       <select id="select-api">
-        <option value="/actix/">Actix Web</option>
-        <option value="/fastify/">Fastify</option>
-        <option value="/gin/">Gin</option>
+        <option value="actix">Actix Web</option>
+        <option value="fastify">Fastify</option>
+        <option value="gin">Gin</option>
       </select>
     </div>
     <div class="get-field">
-      <input type="text" id="book-id" placeholder="Enter Book ID" />
-      <button onclick="getBook()">Get book</button>
+      <!-- TEST fetch book by id -->
+      <!-- <input type="text" id="book-id" placeholder="Enter Book ID" />
+      <button onclick="getBook()">Get book</button> -->
+      <!-- FETCH book by number of get requests -->
+      <input
+        type="text"
+        id="get-number"
+        placeholder="Enter number of requests"
+      />
+      <button onclick="setGetVariables()">Get books</button>
     </div>
     <div class="post-field">
-      <textarea rows="20" cols="50"></textarea>
       <input type="number" id="post-number" placeholder="Number of books" />
       <select id="select-text-size">
         <option value="small">Small</option>
         <option value="medium">Medium</option>
         <option value="large">Large</option>
       </select>
-      <button onclick="setStorageVariables()">Post Book</button>
+      <button onclick="setPostVariables()">Post Book</button>
     </div>
     <div id="result-field">
       <pre id="book-text"></pre>
