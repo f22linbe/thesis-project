@@ -1,17 +1,39 @@
 const selectApi = document.getElementById("select-api");
 // GET elements
 const bookId = document.getElementById("book-id");
+const getNum = document.getElementById("get-number");
+
 // POST elements
 const bookText = document.getElementById("book-text");
 const bookNum = document.getElementById("post-number");
 const bookSize = document.getElementById("select-text-size");
 
+// Download .csv file
+function downloadCSV(csvData, filename = "responsetimes.csv") {
+  return new Promise((resolve) => {
+    // Put response times in the same col
+    const csv = csvData.join("\n");
+
+    const hiddenElement = document.createElement("a");
+    hiddenElement.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
+    hiddenElement.target = "_blank";
+
+    // Provide the name for the CSV file to be downloaded
+    hiddenElement.download = filename;
+    hiddenElement.click();
+
+    setTimeout(resolve, 1000);
+  });
+}
+
+// Fetch a book by id
+/*
 async function getBook() {
   try {
-    const backendService = selectApi.value;
+    const api = selectApi.value;
     const id = bookId.value;
 
-    const url = `${backendService}book/${id}`;
+    const url = `/${api}/book/${id}`;
 
     const res = await fetch(url);
     if (!res.ok) throw new Error("Server error");
@@ -24,19 +46,92 @@ async function getBook() {
     bookText.textContent = "Error: " + err.message;
   }
 }
+*/
+function setGetVariables() {
+  const inputNumGet = getNum.value;
+  const api = selectApi.value;
 
-// TODO
+  localStorage.setItem("numGet", inputNumGet);
+  localStorage.setItem("nameApi", api);
+  // Call API
+  sequenceOfFetchBook();
+}
+
+function generateRandomIDs(iterates) {
+  const currentSeed = parseInt(localStorage.getItem("numGet"));
+  const chance = new Chance(currentSeed);
+
+  let randomID = chance.integer({ min: 0, max: 10000 });
+  return randomID;
+}
+
+async function fetchBook() {
+  try {
+    const api = selectApi.value;
+    const currentSeed = localStorage.getItem("numGet");
+    const id = generateRandomIDs(currentSeed);
+    const responseTimes = JSON.parse(
+      localStorage.getItem("responseTimes") || "[]"
+    );
+
+    const url = `/${api}/book/${id}`;
+    // Start time
+    const startTime = performance.now();
+
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Server error");
+
+    const bookData = await res.json();
+
+    // Stop time
+    const endTime = performance.now();
+
+    // Response time
+    const responseTime = endTime - startTime;
+
+    // Append to array
+    responseTimes.push(responseTime);
+
+    // Save back to localstorage
+    localStorage.setItem("responseTimes", JSON.stringify(responseTimes));
+
+    console.log(`Respons time for ${api}: ${responseTime.toFixed(5)} ms`);
+    console.log(bookData);
+    bookText.textContent = JSON.stringify(bookData, null, 2);
+  } catch (err) {
+    console.log("Error:", err);
+    bookText.textContent = "Error: " + err.message;
+  }
+}
+
+async function sequenceOfFetchBook() {
+  let numOfGet = parseInt(localStorage.getItem("numGet"), 10);
+  // Iterate API call function based on number of posts
+  while (numOfGet > 0) {
+    await fetchBook();
+    numOfGet--;
+    localStorage.setItem("numGet", numOfGet);
+  }
+  // Download response times
+  const csv = JSON.parse(localStorage.getItem("responseTimes") || "[]");
+  console.log(csv);
+  const filename = localStorage.getItem("nameApi");
+  downloadCSV(csv, `${filename}-get.csv`).then(() => {
+    localStorage.clear();
+  });
+}
 // 1.
-function setStorageVariables() {
+function setPostVariables() {
   const inputNumPosts = bookNum.value;
   const inputSize = bookSize.value;
-  const backendService = selectApi.value;
+  const api = selectApi.value;
 
   localStorage.setItem("numPost", inputNumPosts);
   localStorage.setItem("sizePost", inputSize);
-  localStorage.setItem("nameApi", backendService);
+  localStorage.setItem("nameApi", api);
 
-  sequenceOfApiCalls();
+  // Call API
+  sequenceOfPostCalls();
 }
 // 2a. Generate paragraphs based on seed and target
 function generateText(size) {
@@ -67,10 +162,13 @@ function generateBook() {
   }
 }
 
-// API CALL with POST
-async function apiCall() {
+// 3. API CALL with POST
+async function postCall() {
   const size = localStorage.getItem("sizePost");
   const api = localStorage.getItem("nameApi");
+  const responseTimes = JSON.parse(
+    localStorage.getItem("responseTimes") || "[]"
+  );
   // Insert data
   const data = {
     author: "testuser",
@@ -84,7 +182,7 @@ async function apiCall() {
   // Start time
   const startTime = performance.now();
   // API name from input
-  const url = `${api}book`;
+  const url = `/${api}/book`;
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -95,23 +193,32 @@ async function apiCall() {
   // Stop time after getting a result
   const endTime = performance.now();
   // Response time
-  const responsTime = endTime - startTime;
+  const responseTime = endTime - startTime;
 
-  // TODO: Append the times to an array in localstorage
-  console.log(`Respons time for ${api}: ${responsTime.toFixed(5)} ms`);
+  // Append to array
+  responseTimes.push(responseTime);
+
+  // Save back to localstorage
+  localStorage.setItem("responseTimes", JSON.stringify(responseTimes));
+
+  console.log(`Respons time for ${api}: ${responseTime.toFixed(5)} ms`);
   console.log(result);
 }
 
-async function sequenceOfApiCalls() {
+// 4. Iterate APIcall() based on number of posts from localstorage
+async function sequenceOfPostCalls() {
   let numOfPosts = parseInt(localStorage.getItem("numPost"), 10);
   // Iterate API call function based on number of posts
   while (numOfPosts > 0) {
-    await apiCall();
+    await postCall();
     numOfPosts--;
     localStorage.setItem("numPost", numOfPosts);
   }
-  // TODO: Convert list of respons time from storage to a file
-  //
-
-  localStorage.clear();
+  // Download response times
+  const csv = JSON.parse(localStorage.getItem("responseTimes") || "[]");
+  console.log(csv);
+  const filename = localStorage.getItem("nameApi");
+  downloadCSV(csv, `${filename}-post.csv`).then(() => {
+    localStorage.clear();
+  });
 }
