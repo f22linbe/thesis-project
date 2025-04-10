@@ -27,6 +27,7 @@ async fn main() -> std::io::Result<()> {
             .service(fetch_book)
             .route("/hey", web::get().to(greet))
     })
+    .workers(1)
     .bind(("127.0.0.1", port))?
     .run()
     .await
