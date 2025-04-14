@@ -10,15 +10,17 @@ const fastify = Fastify({
 // Set Environment
 const schema = {
   type: "object",
-  required: ["PORT", "DATABASE_URL"],
+  required: ["PORT", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME"],
   properties: {
     PORT: {
       type: "string",
       default: 3000,
     },
-    DATABASE_URL: {
-      type: "string",
-    },
+    DB_USER: { type: "string" },
+    DB_PASSWORD: { type: "string" },
+    DB_HOST: { type: "string" },
+    DB_PORT: { type: "string", default: "5432" },
+    DB_NAME: { type: "string" },
   },
 };
 
@@ -30,7 +32,15 @@ await fastify.register(FastifyEnv, {
 
 // Connect to database
 await fastify.register(pg, {
-  connectionString: fastify.config.DATABASE_URL,
+  host: fastify.config.DB_HOST,
+  port: Number(fastify.config.DB_PORT),
+  user: fastify.config.DB_USER,
+  password: fastify.config.DB_PASSWORD,
+  database: fastify.config.DB_NAME,
+  ssl: {
+    rejectUnauthorized: false,
+  },
+  max: 20,
 });
 
 // Declare a route
