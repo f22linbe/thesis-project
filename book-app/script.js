@@ -109,6 +109,7 @@ async function sequenceOfFetchBook() {
   // Iterate API call function based on number of posts
   while (numOfGet > 0) {
     await fetchBook();
+    await new Promise((r) => setTimeout(r, 50));
     numOfGet--;
     localStorage.setItem("numGet", numOfGet);
   }
@@ -211,6 +212,7 @@ async function sequenceOfPostCalls() {
   // Iterate API call function based on number of posts
   while (numOfPosts > 0) {
     await postCall();
+    await new Promise((r) => setTimeout(r, 50));
     numOfPosts--;
     localStorage.setItem("numPost", numOfPosts);
   }
