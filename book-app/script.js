@@ -26,6 +26,28 @@ function downloadCSV(csvData, filename = "responsetimes.csv") {
   });
 }
 
+// Download .csv file with book id for GET requests
+function downloadCSVWithID(csvData, filename = "responsetimes.csv") {
+  return new Promise((resolve) => {
+    if (!Array.isArray(csvData) || csvData.length === 0) return;
+
+    const rows = csvData.map((e) => `${e.id};${e.time}`);
+
+    // Put response times in the same col
+    const csv = rows.join("\n");
+
+    const hiddenElement = document.createElement("a");
+    hiddenElement.href = "data:text/csv;charset=utf-8," + encodeURI(csv);
+    hiddenElement.target = "_blank";
+
+    // Provide the name for the CSV file to be downloaded
+    hiddenElement.download = filename;
+    hiddenElement.click();
+
+    setTimeout(resolve, 1000);
+  });
+}
+
 // Fetch a book by id
 /*
 async function getBook() {
@@ -82,24 +104,24 @@ async function fetchBook() {
     if (!res.ok) throw new Error("Server error");
 
     const bookData = await res.json();
-
     // Stop time
     const endTime = performance.now();
-
+    const bookId = bookData["id"];
+    // console.log(`Book ID: ${bookId}`);
     // Response time
     const responseTime = endTime - startTime;
 
     // Append to array
-    responseTimes.push(responseTime);
+    responseTimes.push({ id: bookId, time: responseTime });
 
     // Save back to localstorage
     localStorage.setItem("responseTimes", JSON.stringify(responseTimes));
 
-    console.log(`Respons time for ${api}: ${responseTime.toFixed(5)} ms`);
-    console.log(bookData);
+    // console.log(`Respons time for ${api}: ${responseTime.toFixed(5)} ms`);
+    // console.log(bookData);
     bookText.textContent = JSON.stringify(bookData, null, 2);
   } catch (err) {
-    console.log("Error:", err);
+    // console.log("Error:", err);
     bookText.textContent = "Error: " + err.message;
   }
 }
@@ -109,15 +131,15 @@ async function sequenceOfFetchBook() {
   // Iterate API call function based on number of posts
   while (numOfGet > 0) {
     await fetchBook();
-    await new Promise((r) => setTimeout(r, 50));
+    await new Promise((r) => setTimeout(r, 100));
     numOfGet--;
     localStorage.setItem("numGet", numOfGet);
   }
   // Download response times
   const csv = JSON.parse(localStorage.getItem("responseTimes") || "[]");
-  console.log(csv);
+  // console.log(csv);
   const filename = localStorage.getItem("nameApi");
-  downloadCSV(csv, `${filename}-get.csv`).then(() => {
+  downloadCSVWithID(csv, `${filename}-get.csv`).then(() => {
     localStorage.clear();
   });
 }
@@ -202,8 +224,8 @@ async function postCall() {
   // Save back to localstorage
   localStorage.setItem("responseTimes", JSON.stringify(responseTimes));
 
-  console.log(`Respons time for ${api}: ${responseTime.toFixed(5)} ms`);
-  console.log(result);
+  // console.log(`Respons time for ${api}: ${responseTime.toFixed(5)} ms`);
+  // console.log(result);
 }
 
 // 4. Iterate APIcall() based on number of posts from localstorage
@@ -212,13 +234,13 @@ async function sequenceOfPostCalls() {
   // Iterate API call function based on number of posts
   while (numOfPosts > 0) {
     await postCall();
-    await new Promise((r) => setTimeout(r, 50));
+    await new Promise((r) => setTimeout(r, 100));
     numOfPosts--;
     localStorage.setItem("numPost", numOfPosts);
   }
   // Download response times
   const csv = JSON.parse(localStorage.getItem("responseTimes") || "[]");
-  console.log(csv);
+  // console.log(csv);
   const filename = localStorage.getItem("nameApi");
   downloadCSV(csv, `${filename}-post.csv`).then(() => {
     localStorage.clear();
