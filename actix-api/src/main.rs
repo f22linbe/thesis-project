@@ -15,7 +15,7 @@ async fn main() -> std::io::Result<()> {
     dotenv().ok();
     let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let dbpool = PgPoolOptions::new()
-        .max_connections(10)
+        .max_connections(20)
         .connect(&database_url)
         .await
         .expect("Error building a connection pool");
@@ -27,7 +27,6 @@ async fn main() -> std::io::Result<()> {
             .service(fetch_book)
             .route("/hey", web::get().to(greet))
     })
-    .workers(1)
     .bind(("127.0.0.1", port))?
     .run()
     .await

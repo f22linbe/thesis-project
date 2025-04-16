@@ -5,14 +5,11 @@ import (
 	"gin-api/initializers"
 	"net/http"
 	"os"
-	"runtime"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	//
-	runtime.GOMAXPROCS(1)
 	// Connect to PostgreSQL
 	initializers.ConnectDB()
 	// Close connection
