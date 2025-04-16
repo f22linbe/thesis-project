@@ -19,13 +19,18 @@ func ConnectDB() {
 	}
 	connStr := os.Getenv("DATABASE_URL")
 
-	DB, err = pgxpool.New(context.Background(), connStr)
+	config, err := pgxpool.ParseConfig(connStr)
+	if err != nil {
+		log.Fatal("Could not parse connection string", err)
+	}
+	config.MaxConns = 20
 
-	// Check env syntax
+	DB, err = pgxpool.NewWithConfig(context.Background(), config)
+	// if error check env
 	if err != nil {
 		log.Fatalf("Failed to connect to PostgreSQL: %v", err)
 	}
-	// Check DB connection or if service is running.
+	// if error check DB connection or if service is running.
 	if err := DB.Ping(context.Background()); err != nil {
 		log.Fatal("Cannot connect to DB:", err)
 	}
