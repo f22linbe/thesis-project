@@ -12,10 +12,7 @@ const schema = {
   type: "object",
   required: ["PORT", "DB_USER", "DB_PASSWORD", "DB_HOST", "DB_PORT", "DB_NAME"],
   properties: {
-    PORT: {
-      type: "string",
-      default: 3000,
-    },
+    PORT: { type: "string" },
     DB_USER: { type: "string" },
     DB_PASSWORD: { type: "string" },
     DB_HOST: { type: "string" },
