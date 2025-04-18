@@ -131,7 +131,7 @@ async function sequenceOfFetchBook() {
   // Iterate API call function based on number of posts
   while (numOfGet > 0) {
     await fetchBook();
-    await new Promise((r) => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 50));
     numOfGet--;
     localStorage.setItem("numGet", numOfGet);
   }
@@ -181,7 +181,7 @@ function generateBook() {
   } else if (size == "medium") {
     return generateText(1000);
   } else if (size == "large") {
-    return generateText(1500);
+    return generateText(1250); // NOT IN USE
   }
 }
 
@@ -234,7 +234,7 @@ async function sequenceOfPostCalls() {
   // Iterate API call function based on number of posts
   while (numOfPosts > 0) {
     await postCall();
-    await new Promise((r) => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 50));
     numOfPosts--;
     localStorage.setItem("numPost", numOfPosts);
   }
