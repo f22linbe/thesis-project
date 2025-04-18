@@ -5,6 +5,7 @@ import { createBookSchema, getBookSchema } from "./schema.js";
 
 const fastify = Fastify({
   logger: true,
+  bodyLimit: 2 * 1024 * 1024, // 2MB limit for payload/JSON
 });
 
 // Set Environment

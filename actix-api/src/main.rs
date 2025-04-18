@@ -22,6 +22,8 @@ async fn main() -> std::io::Result<()> {
     let port = 3001;
     HttpServer::new(move || {
         App::new()
+            .app_data(web::JsonConfig::default().limit(2 * 1024 * 1024)) // >= 2MB JSON
+            .app_data(web::PayloadConfig::new(2 * 1024 * 1024)) // >= 2MB Payload
             .app_data(Data::new(AppState { db: dbpool.clone() }))
             .service(create_book)
             .service(fetch_book)
