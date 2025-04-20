@@ -43,8 +43,6 @@ pub async fn fetch_book(state: Data<AppState>, path: Path<i32>) -> impl Responde
         Ok(book) => HttpResponse::Ok().json(book),
         Err(_) => HttpResponse::NotFound().json("No books found"),
     }
-
-    // HttpResponse::Ok().body("Hello world!")
 }
 
 #[post("/actix/book")]
@@ -58,7 +56,6 @@ pub async fn create_book(state: Data<AppState>, body: Json<CreateBook>) -> impl 
     .bind(body.book_size.to_string())
     .fetch_one(&state.db)
     .await;
-
     match result {
         Ok(book_insert) => {
             let response = BookMessage {
