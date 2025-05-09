@@ -64,7 +64,7 @@ pub async fn create_book(state: Data<AppState>, body: Json<CreateBook>) -> impl 
                     book_insert.id
                 ),
             };
-            HttpResponse::Ok().json(response)
+            HttpResponse::Created().json(response)
         }
         Err(e) => {
             eprintln!("DB error: {:?}", e);
