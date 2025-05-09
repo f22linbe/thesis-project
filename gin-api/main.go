@@ -27,5 +27,5 @@ func main() {
 
 	r.GET("/gin/book/:id", handlers.GetBookHandler)
 	r.POST("/gin/book", handlers.PostBookHandler)
-	r.Run(":" + port) // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	r.Run(":" + port)
 }
