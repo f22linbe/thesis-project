@@ -28,16 +28,13 @@ await fastify.register(FastifyEnv, {
   confKey: "config",
 });
 
-// Connect to database
+// Fastify configuration
 await fastify.register(pg, {
   host: fastify.config.DB_HOST,
   port: Number(fastify.config.DB_PORT),
   user: fastify.config.DB_USER,
   password: fastify.config.DB_PASSWORD,
   database: fastify.config.DB_NAME,
-  ssl: {
-    rejectUnauthorized: false,
-  },
   max: 20,
 });
 
